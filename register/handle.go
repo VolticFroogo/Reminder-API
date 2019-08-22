@@ -5,11 +5,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/VolticFroogo/Reminder-API/jwt"
-
 	"cloud.google.com/go/datastore"
 
 	"github.com/VolticFroogo/Reminder-API/helper"
+	"github.com/VolticFroogo/Reminder-API/jwt"
 	"github.com/VolticFroogo/Reminder-API/model"
 )
 
@@ -62,7 +61,17 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = jwt.LoadKeys()
+	if err != nil {
+		helper.ThrowErr(err, http.StatusInternalServerError, w)
+		return
+	}
+
 	auth, refresh, err := jwt.NewTokens(key, client)
+	if err != nil {
+		helper.ThrowErr(err, http.StatusInternalServerError, w)
+		return
+	}
 
 	// Send the JSON response.
 	helper.JSONResponse(Response{
