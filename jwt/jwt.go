@@ -3,8 +3,6 @@ package jwt
 import (
 	"context"
 	"crypto/rsa"
-	"fmt"
-	"net/http"
 	"os"
 	"time"
 
@@ -20,7 +18,7 @@ var (
 	privateKey *rsa.PrivateKey
 )
 
-/*// LoadKeys loads both keys.
+// LoadKeys loads both keys.
 func LoadKeys() (err error) {
 	err = LoadPublicKey()
 	if err != nil {
@@ -29,7 +27,7 @@ func LoadKeys() (err error) {
 
 	err = LoadPrivateKey()
 	return
-}*/
+}
 
 // LoadPublicKey loads the public key.
 func LoadPublicKey() (err error) {
@@ -42,12 +40,10 @@ func LoadPublicKey() (err error) {
 }
 
 // LoadPrivateKey loads the private key.
-func LoadPrivateKey(w http.ResponseWriter) (err error) {
+func LoadPrivateKey() (err error) {
 	key := os.Getenv("PRIVATE_KEY")
 
 	bytes := []byte(key)
-
-	fmt.Fprintf(w, "%v | %v", key, bytes)
 
 	privateKey, err = jwt.ParseRSAPrivateKeyFromPEM(bytes)
 	return
