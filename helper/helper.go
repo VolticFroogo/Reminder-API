@@ -3,6 +3,8 @@ package helper
 import (
 	"encoding/json"
 	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // ErrorResponse is the type used for error JSON responses.
@@ -32,4 +34,16 @@ func JSONResponse(data interface{}, w http.ResponseWriter) (err error) {
 	// Write JSON data to response writer.
 	w.Write(dataJSON)
 	return
+}
+
+// HashPassword hashes a password.
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+// CheckPassword checks a password against a hash.
+func CheckPassword(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

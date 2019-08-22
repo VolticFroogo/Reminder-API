@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/VolticFroogo/Reminder-API/jwt"
+
 	"cloud.google.com/go/datastore"
 
 	"github.com/VolticFroogo/Reminder-API/helper"
@@ -13,12 +15,12 @@ import (
 
 // Request is the JSON request.
 type Request struct {
-	Reminder model.Reminder
+	User model.User
 }
 
 // Response is the JSON response if the function was successful.
 type Response struct {
-	ID int64
+	Auth, Refresh string
 }
 
 // Handle is the first function called handling the HTTP request.
@@ -44,17 +46,27 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create a key.
-	key := datastore.IncompleteKey(model.KindReminder, nil)
+	key := datastore.IncompleteKey(model.KindUser, nil)
 
-	// Save the new entity.
-	key, err = client.Put(ctx, key, &req.Reminder)
+	// Hash the user's password before storing it in Datastore.
+	req.User.Password, err = helper.HashPassword(req.User.Password)
 	if err != nil {
 		helper.ThrowErr(err, http.StatusInternalServerError, w)
 		return
 	}
 
+	// Save the new entity.
+	key, err = client.Put(ctx, key, &req.User)
+	if err != nil {
+		helper.ThrowErr(err, http.StatusInternalServerError, w)
+		return
+	}
+
+	auth, refresh, err := jwt.NewTokens(key, client)
+
 	// Send the JSON response.
 	helper.JSONResponse(Response{
-		ID: key.ID,
+		Auth:    auth,
+		Refresh: refresh,
 	}, w)
 }
