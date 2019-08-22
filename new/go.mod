@@ -1,3 +1,6 @@
 module cloudfunction
-module github.com/VolticFroogo/Reminder-API/helper
-module github.com/VolticFroogo/Reminder-API/model
+
+require (
+    github.com/VolticFroogo/Reminder-API/helper master
+	github.com/VolticFroogo/Reminder-API/model master
+)
