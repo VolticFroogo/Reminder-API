@@ -20,17 +20,17 @@ var (
 
 // LoadKeys loads both keys.
 func LoadKeys() (err error) {
-	err = LoadPublicKey()
+	err = LoadPublic()
 	if err != nil {
 		return
 	}
 
-	err = LoadPrivateKey()
+	err = LoadPrivate()
 	return
 }
 
-// LoadPublicKey loads the public key.
-func LoadPublicKey() (err error) {
+// LoadPublic loads the public key.
+func LoadPublic() (err error) {
 	key := os.Getenv("PUBLIC_KEY")
 
 	bytes := []byte(key)
@@ -39,8 +39,8 @@ func LoadPublicKey() (err error) {
 	return
 }
 
-// LoadPrivateKey loads the private key.
-func LoadPrivateKey() (err error) {
+// LoadPrivate loads the private key.
+func LoadPrivate() (err error) {
 	key := os.Getenv("PRIVATE_KEY")
 
 	bytes := []byte(key)
