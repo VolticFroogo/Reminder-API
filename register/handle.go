@@ -61,7 +61,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = jwt.LoadPrivate()
+	err = jwt.LoadPrivate(PrivateKey)
 	if err != nil {
 		helper.ThrowErr(err, http.StatusInternalServerError, w)
 		return

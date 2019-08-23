@@ -18,3 +18,4 @@
 keys/
 *.key
 *.csr
+keys.go

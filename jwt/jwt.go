@@ -3,7 +3,6 @@ package jwt
 import (
 	"context"
 	"crypto/ecdsa"
-	"io/ioutil"
 	"time"
 
 	"cloud.google.com/go/datastore"
@@ -19,33 +18,27 @@ var (
 )
 
 // LoadKeys loads both keys.
-func LoadKeys() (err error) {
-	err = LoadPublic()
+func LoadKeys(public, private string) (err error) {
+	err = LoadPublic(public)
 	if err != nil {
 		return
 	}
 
-	err = LoadPrivate()
+	err = LoadPrivate(private)
 	return
 }
 
 // LoadPublic loads the public key.
-func LoadPublic() (err error) {
-	bytes, err := ioutil.ReadFile("public.csr")
-	if err != nil {
-		return
-	}
+func LoadPublic(key string) (err error) {
+	bytes := []byte(key)
 
 	publicKey, err = jwt.ParseECPublicKeyFromPEM(bytes)
 	return
 }
 
 // LoadPrivate loads the private key.
-func LoadPrivate() (err error) {
-	bytes, err := ioutil.ReadFile("private.key")
-	if err != nil {
-		return
-	}
+func LoadPrivate(key string) (err error) {
+	bytes := []byte(key)
 
 	privateKey, err = jwt.ParseECPrivateKeyFromPEM(bytes)
 	return
