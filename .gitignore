@@ -16,3 +16,5 @@
 
 # RSA keys
 keys/
+*.key
+*.csr
