@@ -21,7 +21,7 @@ type Request struct {
 
 // Response is the JSON response if the function was successful.
 type Response struct {
-	Reminders []model.ReminderWithID
+	Reminders []model.ReminderWithKey
 }
 
 // Handle is the first function called handling the HTTP request.
