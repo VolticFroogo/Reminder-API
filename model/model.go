@@ -22,9 +22,9 @@ type Reminder struct {
 	Creation, Modification, Activation int64  `json:",omitempty"`
 }
 
-type ReminderWithID struct {
-	Name, Description                      string `json:",omitempty"`
-	Creation, Modification, Activation, ID int64  `json:",omitempty"`
+type ReminderWithKey struct {
+	Name, Description, Key             string `json:",omitempty"`
+	Creation, Modification, Activation int64  `json:",omitempty"`
 }
 
 type User struct {

@@ -75,7 +75,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	var res Response
 
 	for {
-		var reminder model.ReminderWithID
+		var reminder model.ReminderWithKey
 
 		key, err := answer.Next(&reminder)
 		if err != nil {
@@ -87,7 +87,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		reminder.ID = key.ID
+		reminder.Key = key.Encode()
 
 		res.Reminders = append(res.Reminders, reminder)
 	}
