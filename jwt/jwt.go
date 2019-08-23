@@ -2,7 +2,7 @@ package jwt
 
 import (
 	"context"
-	"crypto/ecdsa"
+	"crypto/rsa"
 	"time"
 
 	"cloud.google.com/go/datastore"
@@ -13,18 +13,18 @@ import (
 
 // Variables
 var (
-	publicKey  *ecdsa.PublicKey
-	privateKey *ecdsa.PrivateKey
+	publicKey  *rsa.PublicKey
+	privateKey *rsa.PrivateKey
 )
 
 // LoadKeys loads both keys.
-func LoadKeys(public, private string) (err error) {
+func LoadKeys(public, private, password string) (err error) {
 	err = LoadPublic(public)
 	if err != nil {
 		return
 	}
 
-	err = LoadPrivate(private)
+	err = LoadPrivate(private, password)
 	return
 }
 
@@ -32,15 +32,15 @@ func LoadKeys(public, private string) (err error) {
 func LoadPublic(key string) (err error) {
 	bytes := []byte(key)
 
-	publicKey, err = jwt.ParseECPublicKeyFromPEM(bytes)
+	publicKey, err = jwt.ParseRSAPublicKeyFromPEM(bytes)
 	return
 }
 
 // LoadPrivate loads the private key.
-func LoadPrivate(key string) (err error) {
+func LoadPrivate(key, password string) (err error) {
 	bytes := []byte(key)
 
-	privateKey, err = jwt.ParseECPrivateKeyFromPEM(bytes)
+	privateKey, err = jwt.ParseRSAPrivateKeyFromPEMWithPassword(bytes, password)
 	return
 }
 
