@@ -3,6 +3,7 @@ package jwt
 import (
 	"context"
 	"crypto/rsa"
+	"fmt"
 	"time"
 
 	"cloud.google.com/go/datastore"
@@ -83,7 +84,7 @@ func newRefresh(user *datastore.Key, client *datastore.Client) (token string, er
 	// Get all of the time information.
 	now := time.Now()
 	issued := now.Unix()
-	expiry := now.Add(model.AuthDuration).Unix()
+	expiry := now.Add(model.RefreshDuration).Unix()
 
 	// Create the JTI.
 	jti := model.JTI{
@@ -119,4 +120,76 @@ func newRefresh(user *datastore.Key, client *datastore.Client) (token string, er
 	token, err = unsigned.SignedString(privateKey)
 
 	return
+}
+
+// CheckAuth checks the validity of an auth token.
+func CheckAuth(tokenString string) (valid bool, user string, err error) {
+	token, err := jwt.ParseWithClaims(tokenString, &model.Token{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return publicKey, nil
+	})
+	if err != nil {
+		return
+	}
+
+	if !token.Valid {
+		return
+	}
+
+	claims, ok := token.Claims.(*model.Token)
+	if !ok {
+		return
+	}
+
+	if claims.Id != "" {
+		return false, "", fmt.Errorf("got refresh token not auth")
+	}
+
+	return token.Valid, claims.Subject, nil
+}
+
+// CheckRefresh checks the validity of a refresh token.
+func CheckRefresh(tokenString string, client *datastore.Client) (valid bool, user string, err error) {
+	token, err := jwt.ParseWithClaims(tokenString, &model.Token{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return publicKey, nil
+	})
+	if err != nil {
+		return
+	}
+
+	if !token.Valid {
+		return
+	}
+
+	claims, ok := token.Claims.(*model.Token)
+	if !ok {
+		return
+	}
+
+	ctx := context.Background()
+
+	key, err := datastore.DecodeKey(claims.Id)
+	if err != nil {
+		return
+	}
+
+	var jti model.JTI
+
+	err = client.Get(ctx, key, &jti)
+	if err != nil {
+		return
+	}
+
+	if time.Now().Unix() > jti.Expiry {
+		return
+	}
+
+	return token.Valid, claims.Subject, nil
 }

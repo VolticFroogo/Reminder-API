@@ -27,6 +27,10 @@ type User struct {
 	Password        string `json:"-"`
 }
 
+type Credentials struct {
+	Auth, Refresh string `json:",omitempty"`
+}
+
 type Token struct {
 	jwt.StandardClaims
 }
