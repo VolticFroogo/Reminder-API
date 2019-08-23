@@ -68,7 +68,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := datastore.NewQuery(model.KindReminder).Ancestor(user).Order("Activation")
+	query := datastore.NewQuery(model.KindReminder).Ancestor(user)
 
 	answer := client.Run(ctx, query)
 
