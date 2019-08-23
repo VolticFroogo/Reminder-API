@@ -76,8 +76,8 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	// Send the JSON response.
 	helper.JSONResponse(Response{
 		Credentials: model.Credentials{
-			Auth: auth,
+			Auth:    auth,
 			Refresh: refresh,
-		}
+		},
 	}, w)
 }

@@ -124,7 +124,7 @@ func newRefresh(user *datastore.Key, client *datastore.Client) (token string, er
 
 // CheckAuth checks the validity of an auth token.
 func CheckAuth(tokenString string) (valid bool, user string, err error) {
-	token, err := jwt.ParseWithClaims(tokenString, &model.Token{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, model.Token{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -153,7 +153,7 @@ func CheckAuth(tokenString string) (valid bool, user string, err error) {
 
 // CheckRefresh checks the validity of a refresh token.
 func CheckRefresh(tokenString string, client *datastore.Client) (valid bool, user string, err error) {
-	token, err := jwt.ParseWithClaims(tokenString, &model.Token{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, model.Token{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
