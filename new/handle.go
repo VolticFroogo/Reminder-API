@@ -9,6 +9,7 @@ import (
 	"cloud.google.com/go/datastore"
 
 	"github.com/VolticFroogo/Reminder-API/helper"
+	"github.com/VolticFroogo/Reminder-API/jwt"
 	"github.com/VolticFroogo/Reminder-API/middleware"
 	"github.com/VolticFroogo/Reminder-API/model"
 )
@@ -41,6 +42,12 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 
 	// Create a client.
 	client, err := datastore.NewClient(ctx, model.ProjectID)
+	if err != nil {
+		helper.ThrowErr(err, http.StatusInternalServerError, w)
+		return
+	}
+
+	err = jwt.LoadPublic(PublicKey)
 	if err != nil {
 		helper.ThrowErr(err, http.StatusInternalServerError, w)
 		return
