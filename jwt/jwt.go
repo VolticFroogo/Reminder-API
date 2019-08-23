@@ -42,10 +42,11 @@ func LoadPublicKey() (err error) {
 // LoadPrivateKey loads the private key.
 func LoadPrivateKey() (err error) {
 	key := os.Getenv("PRIVATE_KEY")
+	password := os.Getenv("PRIVATE_KEY_PASSWORD")
 
 	bytes := []byte(key)
 
-	privateKey, err = jwt.ParseRSAPrivateKeyFromPEM(bytes)
+	privateKey, err = jwt.ParseRSAPrivateKeyFromPEMWithPassword(bytes, password)
 	return
 }
 
