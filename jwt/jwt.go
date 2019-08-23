@@ -2,7 +2,7 @@ package jwt
 
 import (
 	"context"
-	"crypto/rsa"
+	"crypto/ecdsa"
 	"os"
 	"time"
 
@@ -14,8 +14,8 @@ import (
 
 // Variables
 var (
-	publicKey  *rsa.PublicKey
-	privateKey *rsa.PrivateKey
+	publicKey  *ecdsa.PublicKey
+	privateKey *ecdsa.PrivateKey
 )
 
 // LoadKeys loads both keys.
@@ -35,18 +35,17 @@ func LoadPublicKey() (err error) {
 
 	bytes := []byte(key)
 
-	publicKey, err = jwt.ParseRSAPublicKeyFromPEM(bytes)
+	publicKey, err = jwt.ParseECPublicKeyFromPEM(bytes)
 	return
 }
 
 // LoadPrivateKey loads the private key.
 func LoadPrivateKey() (err error) {
 	key := os.Getenv("PRIVATE_KEY")
-	password := os.Getenv("PRIVATE_KEY_PASSWORD")
 
 	bytes := []byte(key)
 
-	privateKey, err = jwt.ParseRSAPrivateKeyFromPEMWithPassword(bytes, password)
+	privateKey, err = jwt.ParseECPrivateKeyFromPEM(bytes)
 	return
 }
 
