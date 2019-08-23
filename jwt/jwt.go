@@ -3,6 +3,7 @@ package jwt
 import (
 	"context"
 	"crypto/ecdsa"
+	"fmt"
 	"os"
 	"time"
 
@@ -42,6 +43,8 @@ func LoadPublic() (err error) {
 // LoadPrivate loads the private key.
 func LoadPrivate() (err error) {
 	key := os.Getenv("PRIVATE_KEY")
+
+	fmt.Println(key)
 
 	bytes := []byte(key)
 
