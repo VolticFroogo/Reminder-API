@@ -20,11 +20,6 @@ type Request struct {
 	Credentials     model.Credentials
 }
 
-// Response is the JSON response if the function was successful.
-type Response struct {
-	ID int64
-}
-
 // Handle is the first function called handling the HTTP request.
 func Handle(w http.ResponseWriter, r *http.Request) {
 	// Create a variable to store the request when decoded.

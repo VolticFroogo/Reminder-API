@@ -22,7 +22,7 @@ type Request struct {
 
 // Response is the JSON response if the function was successful.
 type Response struct {
-	ID int64
+	Key string
 }
 
 // Handle is the first function called handling the HTTP request.
@@ -85,6 +85,6 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 
 	// Send the JSON response.
 	helper.JSONResponse(Response{
-		ID: key.ID,
+		Key: key.Encode(),
 	}, w)
 }
