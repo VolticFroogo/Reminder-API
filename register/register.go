@@ -3,7 +3,12 @@ package p
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+
+	"github.com/badoux/checkmail"
+
+	"google.golang.org/api/iterator"
 
 	"cloud.google.com/go/datastore"
 
@@ -41,6 +46,24 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	client, err := datastore.NewClient(ctx, model.ProjectID)
 	if err != nil {
 		helper.ThrowErr(err, http.StatusInternalServerError, w)
+		return
+	}
+
+	if checkmail.ValidateFormat(req.User.Email) != nil || req.User.Password == "" || req.User.Username == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	query := datastore.NewQuery("User").Filter("Email =", req.User.Email).KeysOnly()
+
+	answer := client.Run(ctx, query)
+
+	_, err = answer.Next(nil)
+	if err != nil && err != iterator.Done {
+		helper.ThrowErr(err, http.StatusInternalServerError, w)
+		return
+	} else if err == nil {
+		helper.ThrowErr(fmt.Errorf("email taken"), http.StatusBadRequest, w)
 		return
 	}
 
