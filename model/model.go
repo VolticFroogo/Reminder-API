@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	ProjectID = "froogo-reminder"
+	ProjectID = "froogo-reminder-api"
 
 	KindUser     = "User"
 	KindReminder = "Reminder"
