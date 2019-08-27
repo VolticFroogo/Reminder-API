@@ -61,13 +61,13 @@ type Credentials struct {
 
 ### Authentication
 
-All secured end-points will required to be sent with a credentials object.  
+All secured end-points will required to be sent with a [Credentials](#credentials) object.  
 
 #### Re-auth
 
 At any point, if the auth token is invalid, the server will respond with the status code 401 (Unauthorized).  
 
-If the refresh token is still valid, alongside this response there will be a new credentials object with a fresh auth and refresh token.  
+If the refresh token is still valid, alongside this response there will be a new [Credentials](#credentials) object with a fresh auth and refresh token.  
 
 Example:  
 
@@ -98,7 +98,7 @@ Response codes:
 400 (Bad Request)           - Invalid credentials
 500 (Internal Server Error) - Internal server error
 ```
-Response body: Credentials [Credentials](#credentials)  
+Response body: [Credentials](#credentials)  
 Example output:  
 ```JSON
 {
