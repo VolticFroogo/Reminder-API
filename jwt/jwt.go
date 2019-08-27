@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-
+	"cloud.google.com/go/firestore"
 	"github.com/VolticFroogo/Reminder-API/model"
 	"github.com/dgrijalva/jwt-go"
 )
@@ -46,7 +46,7 @@ func LoadPrivate(key, password string) (err error) {
 }
 
 // NewTokens generates new tokens given a user key.
-func NewTokens(user *datastore.Key, client *datastore.Client) (auth, refresh string, err error) {
+func NewTokens(user string, client *firestore.Client) (auth, refresh string, err error) {
 	auth, err = newAuth(user)
 	if err != nil {
 		return
@@ -56,7 +56,7 @@ func NewTokens(user *datastore.Key, client *datastore.Client) (auth, refresh str
 	return
 }
 
-func newAuth(user *datastore.Key) (token string, err error) {
+func newAuth(user string) (token string, err error) {
 	// Get all of the time information.
 	now := time.Now()
 	issued := now.Unix()
@@ -65,7 +65,7 @@ func newAuth(user *datastore.Key) (token string, err error) {
 	// Create the claims for the token.
 	claims := model.Token{
 		jwt.StandardClaims{
-			Subject:   user.Encode(),
+			Subject:   user,
 			IssuedAt:  issued,
 			ExpiresAt: expiry,
 		},
@@ -80,7 +80,7 @@ func newAuth(user *datastore.Key) (token string, err error) {
 	return
 }
 
-func newRefresh(user *datastore.Key, client *datastore.Client) (token string, err error) {
+func newRefresh(user string, client *firestore.Client) (token string, err error) {
 	// Get all of the time information.
 	now := time.Now()
 	issued := now.Unix()
@@ -94,11 +94,7 @@ func newRefresh(user *datastore.Key, client *datastore.Client) (token string, er
 	// Get context.
 	ctx := context.Background()
 
-	// Create a key.
-	key := datastore.IncompleteKey(model.KindJTI, user)
-
-	// Save the new entity.
-	key, err = client.Put(ctx, key, &jti)
+	doc, err := client.Collection(model.KindJTI).Doc(user).Get()
 	if err != nil {
 		return
 	}
@@ -106,8 +102,8 @@ func newRefresh(user *datastore.Key, client *datastore.Client) (token string, er
 	// Create the claims for the token.
 	claims := model.Token{
 		jwt.StandardClaims{
-			Id:        key.Encode(),
-			Subject:   user.Encode(),
+			Id:        doc.ID,
+			Subject:   user,
 			IssuedAt:  issued,
 			ExpiresAt: expiry,
 		},
@@ -152,7 +148,7 @@ func CheckAuth(tokenString string) (valid bool, user string, err error) {
 }
 
 // CheckRefresh checks the validity of a refresh token.
-func CheckRefresh(tokenString string, client *datastore.Client) (valid bool, user string, err error) {
+func CheckRefresh(tokenString string, client *firestore.Client) (valid bool, user string, err error) {
 	token, err := jwt.ParseWithClaims(tokenString, &model.Token{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	firebase "firebase.google.com/go"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -17,14 +18,18 @@ const (
 	RefreshDuration = time.Hour * 24 * 14
 )
 
+var (
+	FirebaseConfig = &firebase.Config{ProjectID: ProjectID}
+)
+
 type Reminder struct {
-	Name, Description                  string `json:",omitempty"`
-	Creation, Modification, Activation int64  `json:",omitempty"`
+	Name, Description string `json:",omitempty"`
+	Activation        int64  `json:",omitempty"`
 }
 
 type ReminderWithKey struct {
-	Name, Description, Key             string `json:",omitempty"`
-	Creation, Modification, Activation int64  `json:",omitempty"`
+	Name, Description, Key string `json:",omitempty"`
+	Activation             int64  `json:",omitempty"`
 }
 
 type User struct {

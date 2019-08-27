@@ -7,7 +7,7 @@ import (
 
 	"google.golang.org/api/iterator"
 
-	"cloud.google.com/go/datastore"
+	firebase "firebase.google.com/go"
 
 	"github.com/VolticFroogo/Reminder-API/helper"
 	"github.com/VolticFroogo/Reminder-API/jwt"
@@ -36,29 +36,41 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get context.
+	// Get context and config.
 	ctx := context.Background()
 
-	// Create a client.
-	client, err := datastore.NewClient(ctx, model.ProjectID)
+	// Create the Firebase app.
+	app, err := firebase.NewApp(ctx, model.FirebaseConfig)
 	if err != nil {
 		helper.ThrowErr(err, http.StatusInternalServerError, w)
 		return
 	}
 
-	query := datastore.NewQuery(model.KindUser).Filter("Email =", req.Email)
+	// Create client.
+	client, err := app.Firestore(ctx)
+	if err != nil {
+		helper.ThrowErr(err, http.StatusInternalServerError, w)
+		return
+	}
 
-	answer := client.Run(ctx, query)
+	defer client.Close()
 
-	var user model.User
+	query := client.Collection(model.KindUser).Where("Email", "==", req.Email).Documents(ctx)
 
-	key, err := answer.Next(&user)
+	answer, err := query.Next()
 	if err != nil {
 		if err == iterator.Done {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
+		helper.ThrowErr(err, http.StatusInternalServerError, w)
+		return
+	}
+
+	var user model.User
+	err = answer.DataTo(&user)
+	if err != nil {
 		helper.ThrowErr(err, http.StatusInternalServerError, w)
 		return
 	}
@@ -74,7 +86,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth, refresh, err := jwt.NewTokens(key, client)
+	auth, refresh, err := jwt.NewTokens(answer.Ref.ID, client)
 	if err != nil {
 		helper.ThrowErr(err, http.StatusInternalServerError, w)
 		return

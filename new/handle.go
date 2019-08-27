@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"cloud.google.com/go/datastore"
 
@@ -71,10 +70,6 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 
 	// Create a key.
 	key := datastore.IncompleteKey(model.KindReminder, user)
-
-	unix := time.Now().Unix()
-	req.Reminder.Creation = unix
-	req.Reminder.Modification = unix
 
 	// Save the new entity.
 	key, err = client.Put(ctx, key, &req.Reminder)
