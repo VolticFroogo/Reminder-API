@@ -63,7 +63,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	key, err := datastore.DecodeKey(req.Reminder)
+	key, err := datastore.DecodeKey(req.Key)
 	if err != nil {
 		helper.ThrowErr(err, http.StatusInternalServerError, w)
 		return
