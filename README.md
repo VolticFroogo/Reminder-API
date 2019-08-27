@@ -235,7 +235,7 @@ Response body: none provided, only response code.
 
 #### Delete
 Path: /delete  
-Input body: [Reminder](#reminder), [Credentials](#credentials)  
+Input body: Key (string), [Credentials](#credentials)  
 Example input:  
 ```JSON
 {
