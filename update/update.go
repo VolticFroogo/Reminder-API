@@ -16,8 +16,8 @@ import (
 
 // Request is the JSON request.
 type Request struct {
-	ReminderWithKey model.ReminderWithKey
-	Credentials     model.Credentials
+	Reminder    model.ReminderWithKey
+	Credentials model.Credentials
 }
 
 // Handle is the first function called handling the HTTP request.
@@ -69,7 +69,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Decode the reminder key.
-	key, err := datastore.DecodeKey(req.ReminderWithKey.Key)
+	key, err := datastore.DecodeKey(req.Reminder.Key)
 	if err != nil {
 		helper.ThrowErr(err, http.StatusInternalServerError, w)
 		return
@@ -82,7 +82,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert the ReminderWithKey to a Reminder.
-	reminder := req.ReminderWithKey.ToReminder()
+	reminder := req.Reminder.ToReminder()
 
 	// Save the new entity.
 	_, err = client.Put(ctx, key, &reminder)
