@@ -28,8 +28,7 @@ type ReminderWithKey struct {
 }
 
 type User struct {
-	Username, Email string `json:",omitempty"`
-	Password        string `json:"-"`
+	Username, Email, Password string `json:",omitempty"`
 }
 
 type Credentials struct {

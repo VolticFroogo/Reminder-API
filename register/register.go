@@ -47,18 +47,15 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	// Create a key.
 	key := datastore.IncompleteKey(model.KindUser, nil)
 
-	// Create a new user object.
-	user := req.User
-
 	// Hash the user's password before storing it in Datastore.
-	user.Password, err = helper.HashPassword(req.User.Password)
+	req.User.Password, err = helper.HashPassword(req.User.Password)
 	if err != nil {
 		helper.ThrowErr(err, http.StatusInternalServerError, w)
 		return
 	}
 
 	// Save the new entity.
-	key, err = client.Put(ctx, key, &user)
+	key, err = client.Put(ctx, key, &req.User)
 	if err != nil {
 		helper.ThrowErr(err, http.StatusInternalServerError, w)
 		return
