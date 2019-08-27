@@ -27,6 +27,17 @@ type ReminderWithKey struct {
 	Creation, Modification, Activation int64  `json:",omitempty"`
 }
 
+// ToReminder converts a ReminderWithKey to a Reminder.
+func (input ReminderWithKey) ToReminder() (output Reminder) {
+	output = Reminder{
+		Name:         input.Name,
+		Description:  input.Description,
+		Creation:     input.Creation,
+		Modification: input.Modification,
+		Activation:   input.Activation,
+	}
+}
+
 type User struct {
 	Username, Email, Password string `json:",omitempty"`
 }
