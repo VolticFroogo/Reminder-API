@@ -15,7 +15,7 @@ import (
 
 // Request is the JSON request.
 type Request struct {
-	Reminder    string
+	Key         string
 	Credentials model.Credentials
 }
 
