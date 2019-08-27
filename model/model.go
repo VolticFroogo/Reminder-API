@@ -28,8 +28,8 @@ type ReminderWithKey struct {
 }
 
 // ToReminder converts a ReminderWithKey to a Reminder.
-func (input ReminderWithKey) ToReminder() (output Reminder) {
-	output = Reminder{
+func (input ReminderWithKey) ToReminder() Reminder {
+	return Reminder{
 		Name:         input.Name,
 		Description:  input.Description,
 		Creation:     input.Creation,
